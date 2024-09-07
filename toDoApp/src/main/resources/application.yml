@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: toDoApp
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/todoapp
+    username: postgres
+    password: 2810
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: test-email@gmail.com
+    password: test-email-password
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.xml
