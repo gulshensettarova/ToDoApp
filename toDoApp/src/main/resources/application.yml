@@ -12,11 +12,11 @@ spring:
       hibernate:
         format_sql: true
   authentication:
-jwt:
-  expiration-in-ms: 86400000 # 24 hours
-  refresh-token-expiration-in-ms: 259200000 # 3 days
-  private-key: "<your-private-key>"
-  public-key: "<your-public-key>"
+    jwt:
+      expiration-in-ms: 86400000 # 24 hours
+      refresh-token-expiration-in-ms: 259200000 # 3 days
+      private-key: "<your-private-key>"
+      public-key: "<your-public-key>"
   rabbitmq:
     host: localhost
     port: 5672
