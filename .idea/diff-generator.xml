@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DiffGenerationConfig">
+    <option name="updateChangeLogPath" value="toDoApp/src/main/resources/db/changelog/db.changelog-master.xml" />
+    <option name="updateDbConnectionName" value="17c0c708-4d6c-4bfc-99ff-279606a21165" />
+  </component>
+</project>
