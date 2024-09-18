@@ -36,10 +36,6 @@ public class Employee {
     @JoinColumn(name = "employee_user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employee_user_status_id", referencedColumnName = "id")
-    private UserStatus userStatus;
-
     @CreationTimestamp
     @Column(name = "created_at")
     private Timestamp createdAt;

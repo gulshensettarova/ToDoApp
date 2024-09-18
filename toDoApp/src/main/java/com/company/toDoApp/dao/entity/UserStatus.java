@@ -15,5 +15,5 @@ public class UserStatus {
     @Column(name="user_status")
     private String userStatus;
     @OneToMany(mappedBy = "userStatus", cascade = CascadeType.ALL)
-    private List<Employee> employees;
+    private List<User> users;
 }

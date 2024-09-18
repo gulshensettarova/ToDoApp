@@ -11,27 +11,32 @@ import java.util.Collections;
 public class UserPrincipal implements UserDetails {
 
     private int id;
-    private String username;
+    private String mail;
     private transient  String password;
-    private Collection<? extends GrantedAuthority> authorities;
+    private GrantedAuthority authority; // Bir rol
 
     public UserPrincipal(){
 
     }
-    public UserPrincipal(int id, String username, Collection<? extends GrantedAuthority> authorities) {
+    public UserPrincipal(int id, String mail, String password, String role) {
         this.id = id;
-        this.username = username;
+        this.mail = mail;
         this.password = password;
-        this.authorities = authorities;
+        this.authority = new SimpleGrantedAuthority(role); // Bazadan alınan rol
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority("USER"));
+    public GrantedAuthority getAuthority(String role) {
+        return new SimpleGrantedAuthority(role);
     }
     public int getId(){
         return id;
     }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
+
     @Override
     public String getPassword() {
         return password;
@@ -39,7 +44,7 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public String getUsername() {
-        return username;
+        return mail;
     }
 
     @Override

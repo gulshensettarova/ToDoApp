@@ -43,7 +43,8 @@ public class UserRegistrationService {
         if (userVerificationService.verifyEmailExists(request.getUserEmail())) {
             // Şifrəni hash edirik
             String hashedPassword = passwordEncoder.encode(request.getUserPassword());
-
+            //Istifadecinin bazada olub-oolmadigini yoxlayiriq
+            checkUserAlreadyExistOrNot(request.getUserEmail());
             // User obyektini yaradıb, bazaya insert edirik
             User user = userMapper.toEntity(request);
             user.setUserPasswordHash(hashedPassword);
@@ -67,5 +68,25 @@ public class UserRegistrationService {
         }
         return false;
     }
+
+    public User findByUserId(int userId){
+        return userRepository.findById(userId)
+                .orElseThrow(()->new RuntimeException("User couldn't be found by following ID: "+userId));
+
+    }
+    public User findByUserEmail(String email){
+        return userRepository.findByUserEmail(email)
+                .orElseThrow(()->new RuntimeException("User couldn't be found by following mail: "+email));
+    }
+    public void checkUserAlreadyExistOrNot(String email){
+       Optional<User> user= userRepository.findByUserEmail(email);
+        user.ifPresent(user1 -> {throw new RuntimeException("User Already Exist");});
+    }
+    public String getRoleByEmail(String email) {
+        User user = userRepository.findByUserEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found by mail: " + email));
+        return user.getUserStatus().getUserStatus(); // İstifadəçinin rolunu qaytarır
+    }
+
 }
 

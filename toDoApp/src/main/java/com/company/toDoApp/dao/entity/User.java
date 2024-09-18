@@ -21,8 +21,6 @@ public class User {
     private String userPasswordHash;
     @Column(name = "is_email_confirmed")
     private boolean isConfirmed;
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private Employee employee;
     @CreationTimestamp
     @Column(name="created_at")
     private Timestamp createdAt;
@@ -30,7 +28,12 @@ public class User {
     @Column(name = "updated_at")
     private Timestamp updatedAt;
     @Column(name = "is_active")
-    private boolean isAcive;
+    private boolean isActive;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_status_id", referencedColumnName = "id")
+    private UserStatus userStatus;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Employee employee;
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
     private List<PasswordReset> passwordResetList;
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
