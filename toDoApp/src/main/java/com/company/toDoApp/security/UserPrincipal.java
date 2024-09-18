@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 public class UserPrincipal implements UserDetails {
 
@@ -25,6 +26,8 @@ public class UserPrincipal implements UserDetails {
         this.authority = new SimpleGrantedAuthority(role); // Bazadan alınan rol
     }
 
+
+
     public GrantedAuthority getAuthority(String role) {
         return new SimpleGrantedAuthority(role);
     }
@@ -37,6 +40,9 @@ public class UserPrincipal implements UserDetails {
         return null;
     }
 
+    public GrantedAuthority getAuthority(){
+        return  authority;
+    }
     @Override
     public String getPassword() {
         return password;

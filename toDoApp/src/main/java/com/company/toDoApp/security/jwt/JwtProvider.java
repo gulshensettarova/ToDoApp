@@ -18,13 +18,8 @@ import org.springframework.security.core.GrantedAuthority;
 import java.security.SignatureException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.List;
-import java.util.Arrays;
 
 @Component
 public class JwtProvider {
@@ -70,14 +65,13 @@ public class JwtProvider {
     }
 
     public String generateToken(UserPrincipal authentication) {
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining());
+        // İstifadəçinin rolunu əldə et
+        String role = String.valueOf(authentication.getAuthority());
 
         return Jwts.builder()
                 .setSubject(authentication.getUsername())
                 .claim("userId", authentication.getId())
-                .claim("roles", authorities)
+                .claim("role", role)
                 .setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION_IN_MS))
                 .signWith(jwtPrivateKey, SignatureAlgorithm.RS256)
                 .compact();
@@ -106,39 +100,18 @@ public class JwtProvider {
 
             String username = claims.getSubject();
             Long userId = claims.get("userId", Long.class);
-            List<GrantedAuthority> authorities = Arrays.stream(claims.get("roles").toString().split(","))
-                    .map(role -> role.startsWith("ROLE_") ? role : "ROLE_" + role)
-                    .map(SimpleGrantedAuthority::new)
-                    .collect(Collectors.toList());
+            String role = claims.get("role", String.class); // Yalnız bir rol
 
-            UserDetails userDetails = new UserPrincipal(Math.toIntExact(userId), username, authorities);
-            return username != null ? new UsernamePasswordAuthenticationToken(userDetails, null, authorities) : null;
-        }  catch (UnsupportedJwtException e) {
+            // Yalnız bir GrantedAuthority yaradırıq
+            GrantedAuthority authority = new SimpleGrantedAuthority(role);
+            UserDetails userDetails = new UserPrincipal(Math.toIntExact(userId), username, null, role);
+            return new UsernamePasswordAuthenticationToken(userDetails, null, Collections.singletonList(authority));
+        } catch (UnsupportedJwtException e) {
             throw new RuntimeException("Unsupported JWT token: " + e.getMessage(), e);
         } catch (MalformedJwtException e) {
             throw new RuntimeException("Invalid JWT token: " + e.getMessage(), e);
         } catch (Exception e) {
             throw new RuntimeException("JWT parsing error: " + e.getMessage(), e);
-        }
-    }
-
-    public boolean isTokenValid(HttpServletRequest request) {
-        String token = resolveToken(request);
-        if (token == null || isTokenBlacklisted(token)) {
-            return false;
-        }
-        try {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(jwtPublicKey)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-
-            return !claims.getExpiration().before(new Date());
-        } catch (UnsupportedJwtException e) {
-            return false;
-        } catch (Exception e) {
-            return false;
         }
     }
 
@@ -152,9 +125,16 @@ public class JwtProvider {
 
             String username = claims.getSubject();
             Long userId = claims.get("userId", Long.class);
-            return generateToken(new UserPrincipal(Math.toIntExact(userId), username, null));
+            String role = claims.get("role", String.class); // Yalnız bir rol əldə edilir
+
+            // Yeni token yaradın
+            return generateToken(new UserPrincipal(Math.toIntExact(userId), username, null, role));
         } catch (UnsupportedJwtException e) {
             throw new RuntimeException("Invalid JWT token for refresh: " + e.getMessage(), e);
+        } catch (MalformedJwtException e) {
+            throw new RuntimeException("Invalid JWT token for refresh: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new RuntimeException("JWT parsing error during refresh: " + e.getMessage(), e);
         }
     }
 
@@ -164,6 +144,23 @@ public class JwtProvider {
             return bearerToken.substring(JWT_TOKEN_PREFIX.length() + 1);
         }
         return null;
+    }
+
+    public boolean isTokenValid(HttpServletRequest request){
+        String token = resolveToken(request);
+        if (token == null){
+            return false;
+        }
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(jwtPublicKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        if (claims.getExpiration().before(new Date())){
+            return false;
+        }
+        return true;
     }
 
     public void blacklistToken(String token) {
