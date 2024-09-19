@@ -138,7 +138,7 @@ public class JwtProvider {
         }
     }
 
-    private String resolveToken(HttpServletRequest request) {
+    public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(JWT_HEADER_STRING);
         if (bearerToken != null && bearerToken.startsWith(JWT_TOKEN_PREFIX)) {
             return bearerToken.substring(JWT_TOKEN_PREFIX.length() + 1);
@@ -163,7 +163,7 @@ public class JwtProvider {
         return true;
     }
 
-    public void blacklistToken(String token) {
+    public void tokenAddToBlackList(String token) {
         blacklistedTokens.add(token);
     }
 

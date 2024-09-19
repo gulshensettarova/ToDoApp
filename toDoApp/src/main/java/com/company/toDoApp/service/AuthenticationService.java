@@ -3,6 +3,7 @@ package com.company.toDoApp.service;
 import com.company.toDoApp.dto.Request.Filter.SignInRequest;
 import com.company.toDoApp.security.UserPrincipal;
 import com.company.toDoApp.security.jwt.JwtProvider;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -31,4 +32,14 @@ public class AuthenticationService {
         return jwtProvider.generateToken(userPrincipal);
 
     }
-}
+
+    public void signOut(HttpServletRequest request){
+        if (jwtProvider.isTokenValid(request) && !jwtProvider.isTokenBlacklisted(jwtProvider.resolveToken(request))) {
+            jwtProvider.tokenAddToBlackList(jwtProvider.resolveToken(request));
+            System.out.println("Token etibarsızlaşdırıldı və blackliste əlavə edildi.");
+        } else {
+            System.out.println("Token artıq etibarsızdır və ya etibarsız bir token təqdim edildi.");
+        }
+        }
+    }
+
