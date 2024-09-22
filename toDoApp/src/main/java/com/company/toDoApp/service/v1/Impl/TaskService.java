@@ -25,32 +25,43 @@ public class TaskService implements TaskInterface {
 
     @Override
     public Task newTask(TaskCreateRequest request) {
-        //sessiyada olan cari userin id-i gotururuk
-        UserPrincipal currentUser=(UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int currentUserId = currentUser.getId();
-
-        //task hansi project-e aiddir onu tapiriq
-        Project currentProject = projectRepository.findById(request.getProject().getId())
-                .orElseThrow(() -> new RuntimeException("Layihə tapılmadı"));
-
-        // Project-e aid olan komandanın rəhbərinin ID-sini əldə edirik
-        int currentTeamLead=currentProject.getTeam().getTeamLeaderId();
-
         //yeni task yaratmaq selahiyyeti yalniz teamLead-de oldugu ucun sessiyada olan user-in id-i ile projectin teamLead-nin id-i muqayise olunur
-        if(currentUserId==currentTeamLead){
+        if(getCurrentUserId() ==getCurrentTeamLead(request.getProject().getId())){
             Task newTask=taskMapper.toEntity(request);
             taskRepository.save(newTask);
-
+            return newTask;
         }
-
         return null;
     }
 
     @Override
-    public Boolean deleteTask() {
-        return null;
+    public Boolean deleteTask(int id) {
+        int currentProjectId=taskRepository.findById(id).get().getProject().getId();
+        if(getCurrentUserId() == getCurrentTeamLead(currentProjectId)){
+            Task deletedTask=taskRepository.getById(id);
+            deletedTask.setAcive(false);
+            taskRepository.save(deletedTask);
+            return true;
+        }
+
+        return false;
     }
 
+    //Sessiyada olan cari user-in id-ini tapmaq ucun bu metoddan istifade edirik
+    public int getCurrentUserId() {
+        UserPrincipal currentUser=(UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        int currentUserId = currentUser.getId();
+        return currentUserId;
+    }
+
+    public int getCurrentTeamLead(int projectId) {
+        //task hansi project-e aiddir onu tapiriq
+        Project currentProject = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Layihə tapılmadı"));
+        // Project-e aid olan komandanın rəhbərinin ID-sini əldə edirik
+        int currentTeamLead=currentProject.getTeam().getTeamLeaderId();
+        return currentTeamLead;
+    }
     @Override
     public Boolean updateTask() {
         return null;

@@ -7,7 +7,7 @@ import com.company.toDoApp.model.dao.entity.Task;
 
 public interface TaskInterface {
     Task newTask(TaskCreateRequest request);
-    Boolean deleteTask();
+    Boolean deleteTask(int id);
     Boolean updateTask();
     Boolean changeStatus();
     TaskStatusEnum getStatus();
