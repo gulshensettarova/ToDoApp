@@ -1,7 +1,7 @@
 package com.company.toDoApp.security;
 
-import com.company.toDoApp.dao.entity.User;
-import com.company.toDoApp.dao.repository.UserRepository;
+import com.company.toDoApp.model.dao.entity.User;
+import com.company.toDoApp.model.dao.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

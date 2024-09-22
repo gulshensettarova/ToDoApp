@@ -1,6 +1,6 @@
 package com.company.toDoApp.service;
 
-import com.company.toDoApp.dto.Request.Filter.SignInRequest;
+import com.company.toDoApp.model.dto.Request.Filter.SignInRequest;
 import com.company.toDoApp.security.UserPrincipal;
 import com.company.toDoApp.security.jwt.JwtProvider;
 import jakarta.servlet.http.HttpServletRequest;

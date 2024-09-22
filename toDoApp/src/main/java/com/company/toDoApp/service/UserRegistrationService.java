@@ -1,10 +1,10 @@
 package com.company.toDoApp.service;
 
-import com.company.toDoApp.dao.entity.Employee;
-import com.company.toDoApp.dao.entity.User;
-import com.company.toDoApp.dao.repository.EmployeeRepository;
-import com.company.toDoApp.dao.repository.UserRepository;
-import com.company.toDoApp.dto.Request.Create.UserCreateRequest;
+import com.company.toDoApp.model.dao.entity.Employee;
+import com.company.toDoApp.model.dao.entity.User;
+import com.company.toDoApp.model.dao.repository.EmployeeRepository;
+import com.company.toDoApp.model.dao.repository.UserRepository;
+import com.company.toDoApp.model.dto.Request.Create.UserCreateRequest;
 import com.company.toDoApp.mapper.UserMapper;
 import com.company.toDoApp.messaging.MessageSenderService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

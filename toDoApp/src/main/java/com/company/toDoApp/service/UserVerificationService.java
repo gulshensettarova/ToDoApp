@@ -1,6 +1,6 @@
 package com.company.toDoApp.service;
 
-import com.company.toDoApp.dao.entity.Employee;
+import com.company.toDoApp.model.dao.entity.Employee;
 import com.company.toDoApp.service.client.UserVerificationClient;
 import com.company.toDoApp.wrapper.UserEmployeeWrapper;
 import org.springframework.stereotype.Service;

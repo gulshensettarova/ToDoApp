@@ -1,7 +1,7 @@
 package com.company.toDoApp.wrapper;
 
-import com.company.toDoApp.dao.entity.Employee;
-import com.company.toDoApp.dao.entity.User;
+import com.company.toDoApp.model.dao.entity.Employee;
+import com.company.toDoApp.model.dao.entity.User;
 
 public class UserEmployeeWrapper {
     private Employee employee;

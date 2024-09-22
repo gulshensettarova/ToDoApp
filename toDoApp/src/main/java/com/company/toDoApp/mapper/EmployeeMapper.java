@@ -1,10 +1,10 @@
 package com.company.toDoApp.mapper;
 
-import com.company.toDoApp.dao.entity.Employee;
-import com.company.toDoApp.dto.Request.Create.EmployeeCreateRequest;
-import com.company.toDoApp.dto.Request.Filter.EmployeeFilterRequest;
-import com.company.toDoApp.dto.Request.Update.EmployeeUpdateRequest;
-import com.company.toDoApp.dto.Response.EmployeeResponse;
+import com.company.toDoApp.model.dao.entity.Employee;
+import com.company.toDoApp.model.dto.Request.Create.EmployeeCreateRequest;
+import com.company.toDoApp.model.dto.Request.Filter.EmployeeFilterRequest;
+import com.company.toDoApp.model.dto.Request.Update.EmployeeUpdateRequest;
+import com.company.toDoApp.model.dto.Response.EmployeeResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

@@ -1,6 +1,6 @@
 package com.company.toDoApp.controller.v1;
 
-import com.company.toDoApp.dto.Request.Filter.SignInRequest;
+import com.company.toDoApp.model.dto.Request.Filter.SignInRequest;
 import com.company.toDoApp.service.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;

@@ -1,10 +1,10 @@
 package com.company.toDoApp.mapper;
 
-import com.company.toDoApp.dao.entity.User;
-import com.company.toDoApp.dto.Request.Create.UserCreateRequest;
-import com.company.toDoApp.dto.Request.Filter.UserFilterRequest;
-import com.company.toDoApp.dto.Request.Update.UserUpdateRequest;
-import com.company.toDoApp.dto.Response.UserResponse;
+import com.company.toDoApp.model.dao.entity.User;
+import com.company.toDoApp.model.dto.Request.Create.UserCreateRequest;
+import com.company.toDoApp.model.dto.Request.Filter.UserFilterRequest;
+import com.company.toDoApp.model.dto.Request.Update.UserUpdateRequest;
+import com.company.toDoApp.model.dto.Response.UserResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
