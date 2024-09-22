@@ -9,7 +9,7 @@ public interface TaskInterface {
     Task newTask(TaskCreateRequest request);
     Boolean deleteTask(int id);
     Boolean updateTask();
-    Boolean changeStatus();
+    Boolean changeStatus(int taskId,TaskStatusEnum newstatus);
     TaskStatusEnum getStatus();
 
 }
