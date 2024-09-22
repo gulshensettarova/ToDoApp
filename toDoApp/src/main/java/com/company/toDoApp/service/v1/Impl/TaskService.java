@@ -25,8 +25,7 @@ public class TaskService implements TaskInterface {
 
     @Override
     public Task newTask(TaskCreateRequest request) {
-        //yeni task yaratmaq selahiyyeti yalniz teamLead-de oldugu ucun sessiyada olan user-in id-i ile projectin teamLead-nin id-i muqayise olunur
-        if(getCurrentUserId() ==getCurrentTeamLead(request.getProject().getId())){
+        if(checkProjectTeamLead(request.getProject().getId())){
             Task newTask=taskMapper.toEntity(request);
             taskRepository.save(newTask);
             return newTask;
@@ -36,14 +35,30 @@ public class TaskService implements TaskInterface {
 
     @Override
     public Boolean deleteTask(int id) {
-        int currentProjectId=taskRepository.findById(id).get().getProject().getId();
-        if(getCurrentUserId() == getCurrentTeamLead(currentProjectId)){
+        int projectId=getCurrentProjectId((id));
+        if(checkProjectTeamLead(projectId)){
             Task deletedTask=taskRepository.getById(id);
             deletedTask.setAcive(false);
             taskRepository.save(deletedTask);
             return true;
         }
 
+        return false;
+    }
+
+    public int getCurrentProjectId(int taskId){
+        int currentProjectId=taskRepository.findById(taskId).get().getProject().getId();
+        return currentProjectId;
+    }
+
+    //gonderilen projectId-e gore onun teamLead-i tapilir ve sessiyada olan adamla id-i muqayise olunur
+    public Boolean checkProjectTeamLead(int projectId){
+        Project currentProject = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Layihə tapılmadı"));
+        int currentTeamLead=currentProject.getTeam().getTeamLeaderId();
+        if(currentTeamLead == getCurrentUserId()){
+            return true;
+        }
         return false;
     }
 
@@ -54,14 +69,6 @@ public class TaskService implements TaskInterface {
         return currentUserId;
     }
 
-    public int getCurrentTeamLead(int projectId) {
-        //task hansi project-e aiddir onu tapiriq
-        Project currentProject = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Layihə tapılmadı"));
-        // Project-e aid olan komandanın rəhbərinin ID-sini əldə edirik
-        int currentTeamLead=currentProject.getTeam().getTeamLeaderId();
-        return currentTeamLead;
-    }
     @Override
     public Boolean updateTask() {
         return null;
