@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TaskService implements TaskInterface {
+
+    //Burada design pattern tedbiq olunub optimallasdirilacaq (Command Pattern)
     private final TaskMapper taskMapper;
     private final TaskRepository taskRepository;
     private final TaskStatusImpl taskStatusService;
@@ -44,7 +46,8 @@ public class TaskService implements TaskInterface {
     public Boolean deleteTask(int id) {
         int projectId=getCurrentProjectId((id));
         if(checkProjectTeamLead(projectId)){
-            Task deletedTask=taskRepository.getById(id);
+            Task deletedTask = taskRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Task tapılmadı"));
             deletedTask.setAcive(false);
             taskRepository.save(deletedTask);
             return true;
@@ -59,14 +62,10 @@ public class TaskService implements TaskInterface {
     }
 
     //gonderilen projectId-e gore onun teamLead-i tapilir ve sessiyada olan adamla id-i muqayise olunur
-    public Boolean checkProjectTeamLead(int projectId){
+    public Boolean checkProjectTeamLead(int projectId) {
         Project currentProject = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Layihə tapılmadı"));
-        int currentTeamLead=currentProject.getTeam().getTeamLeaderId();
-        if(currentTeamLead == getCurrentUserId()){
-            return true;
-        }
-        return false;
+        return currentProject.getTeam().getTeamLeaderId() == getCurrentUserId();
     }
 
     //Sessiyada olan cari user-in id-ini tapmaq ucun bu metoddan istifade edirik
@@ -75,55 +74,58 @@ public class TaskService implements TaskInterface {
         int currentUserId = currentUser.getId();
         return currentUserId;
     }
+    public int getTaskEmployeeId(int taskId){
+        return taskRepository.findById(taskId).get().getEmployee().getId();
+    }
 
     @Override
     public Boolean updateTask() {
         return null;
     }
-
-    @Override
-    public Boolean changeStatus(int taskId,TaskStatusEnum newStatus) {
-        Task task = taskRepository.findById(taskId)
+    public Boolean saveStatus(Task task,TaskStatusEnum status){
+        TaskStatus statusEntity = taskStatusService.findByEnum(status);
+        task.setStatus(statusEntity);
+        taskRepository.save(task);
+        return true;
+    }
+    private Task findTaskById(int taskId) {
+        return taskRepository.findById(taskId)
                 .orElseThrow(() -> new RuntimeException("Task tapılmadı"));
+    }
+    @Override
+    public Boolean changeStatus(int taskId, TaskStatusEnum newStatus) {
+        Task task = findTaskById(taskId); // Taskı tapmaq üçün utility metoddan istifadə edirik
+        int projectId = task.getProject().getId(); // Taskın aid olduğu layihənin ID-sini tapırıq
 
-        // Taskın aid olduğu layihənin ID-sini tapmaq
-        int projectId = getCurrentProjectId(taskId);
-        // Əgər hal-hazırda login olan istifadəçi layihənin komanda rəhbəridirsə
-        if (checkProjectTeamLead(projectId)) {
-            if(newStatus.equals(TaskStatusEnum.CANCELLED) ||
-                    newStatus.equals(TaskStatusEnum.COMPLETED) ||
-                    newStatus.equals(TaskStatusEnum.NOT_COMPLETED)){
-                // TaskStatusEnum-u TaskStatus entitiyə çevirmək
-                TaskStatus statusEntity = taskStatusService.findByEnum(newStatus);
-                // Task-ın statusunu yeniləyirik
-                task.setStatus(statusEntity);
-                // Yenilənmiş task-ı saxlayırıq
-                taskRepository.save(task);
-                return true; // Status uğurla dəyişdirildi
-            }
-            else {
-                throw new RuntimeException("Yalnız komanda rəhbəri taskın statusunu dəyişə bilər.");
-            }
+        // Statusa görə switch istifadə edirik
+        switch (newStatus) {
+            // Layihə rəhbərinin dəyişə biləcəyi statuslar
+            case CANCELLED:
+            case COMPLETED:
+            case NOT_COMPLETED:
+                if (checkProjectTeamLead(projectId)) {
+                    saveStatus(task, newStatus); // Statusu yeniləyirik
+                } else {
+                    throw new RuntimeException("Yalnız komanda rəhbəri taskın statusunu dəyişə bilər.");
+                }
+                break;
 
-        }
-        // Əgər hal-hazırda login olan istifadəçi taskı icra etmeli olan iscidirse
-        //bura tamamlanmali
-        //tekrar kodlar metoda alinmali
-        else  if(1==1){
-            if(newStatus.equals(TaskStatusEnum.IN_PROGRESS) ||
-                    newStatus.equals(TaskStatusEnum.ON_HOLD)){
-                // TaskStatusEnum-u TaskStatus entitiyə çevirmək
-                TaskStatus statusEntity = taskStatusService.findByEnum(newStatus);
-                // Task-ın statusunu yeniləyirik
-                task.setStatus(statusEntity);
-                // Yenilənmiş task-ı saxlayırıq
-                taskRepository.save(task);
-                return true; // Status uğurla dəyişdirildi
-            }
+            // Taskın icra olunmasını tələb edən işçinin dəyişə biləcəyi statuslar
+            case IN_PROGRESS:
+            case ON_HOLD:
+                if (getCurrentUserId() == getTaskEmployeeId(taskId)) {
+                    saveStatus(task, newStatus); // Statusu yeniləyirik
+                } else {
+                    throw new RuntimeException("Taskın icraçısı yalnız müəyyən statusları dəyişə bilər.");
+                }
+                break;
 
+            // Əgər tanınmayan status verilərsə
+            default:
+                throw new RuntimeException("Mövcud olmayan status!");
         }
 
-        return null;
+        return true;
     }
 
     @Override
