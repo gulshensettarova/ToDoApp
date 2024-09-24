@@ -18,7 +18,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class TaskService implements TaskInterface {
 
-    //Burada design pattern tedbiq olunub optimallasdirilacaq (Command Pattern)
+    // Qeyd: Butun metodlarda aktiv user nezere alinib.
+    //NewTask (Aktiv user nezere alinmaqla)  +++
+    //DeleteTask (Aktiv user nezere alinmaqla) +++
+    //UpdateTask (Aktiv user nezere alinmaqla) ---
+    //ChangeTaskStatus (command DP tedbiq edildi, aktiv user nezere alindi) +++
+    //Filter & Search ---
     private final TaskMapper taskMapper;
     private final TaskRepository taskRepository;
     private final TaskStatusService taskStatusService;
