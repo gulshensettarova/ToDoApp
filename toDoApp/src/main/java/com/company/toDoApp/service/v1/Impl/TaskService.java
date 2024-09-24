@@ -1,9 +1,11 @@
 package com.company.toDoApp.service.v1.Impl;
 
+import com.company.toDoApp.command.taskstatus.EmployeeStatusChangeCommand;
+import com.company.toDoApp.command.taskstatus.TaskStatusChangeCommand;
+import com.company.toDoApp.command.taskstatus.TeamLeadStatusChangeCommand;
 import com.company.toDoApp.model.dao.entity.Project;
 import com.company.toDoApp.model.dao.entity.TaskStatus;
 import com.company.toDoApp.model.dao.repository.ProjectRepository;
-import com.company.toDoApp.model.dao.repository.TaskStatusRepository;
 import com.company.toDoApp.model.dto.Request.Create.TaskCreateRequest;
 import com.company.toDoApp.model.enums.task.TaskStatusEnum;
 import com.company.toDoApp.model.dao.entity.Task;
@@ -11,7 +13,6 @@ import com.company.toDoApp.model.dao.repository.TaskRepository;
 import com.company.toDoApp.mapper.TaskMapper;
 import com.company.toDoApp.security.UserPrincipal;
 import com.company.toDoApp.service.v1.Inter.TaskInterface;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +22,11 @@ public class TaskService implements TaskInterface {
     //Burada design pattern tedbiq olunub optimallasdirilacaq (Command Pattern)
     private final TaskMapper taskMapper;
     private final TaskRepository taskRepository;
-    private final TaskStatusImpl taskStatusService;
+    private final TaskStatusService taskStatusService;
     private final ProjectRepository projectRepository;
 
-    public TaskService(TaskMapper taskMapper, TaskRepository taskRepository, ProjectRepository projectRepository, TaskStatusImpl taskStatusService) {
+
+    public TaskService(TaskMapper taskMapper, TaskRepository taskRepository, ProjectRepository projectRepository, TaskStatusService taskStatusService) {
         this.taskMapper = taskMapper;
         this.taskRepository = taskRepository;
         this.projectRepository = projectRepository;
@@ -44,21 +46,15 @@ public class TaskService implements TaskInterface {
 
     @Override
     public Boolean deleteTask(int id) {
-        int projectId=getCurrentProjectId((id));
+        Task deletedTask = findTaskById(id);
+        int projectId = deletedTask.getProject().getId();
         if(checkProjectTeamLead(projectId)){
-            Task deletedTask = taskRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Task tapılmadı"));
             deletedTask.setAcive(false);
             taskRepository.save(deletedTask);
             return true;
         }
 
         return false;
-    }
-
-    public int getCurrentProjectId(int taskId){
-        int currentProjectId=taskRepository.findById(taskId).get().getProject().getId();
-        return currentProjectId;
     }
 
     //gonderilen projectId-e gore onun teamLead-i tapilir ve sessiyada olan adamla id-i muqayise olunur
@@ -71,8 +67,7 @@ public class TaskService implements TaskInterface {
     //Sessiyada olan cari user-in id-ini tapmaq ucun bu metoddan istifade edirik
     public int getCurrentUserId() {
         UserPrincipal currentUser=(UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int currentUserId = currentUser.getId();
-        return currentUserId;
+        return currentUser.getId();
     }
     public int getTaskEmployeeId(int taskId){
         return taskRepository.findById(taskId).get().getEmployee().getId();
@@ -82,49 +77,29 @@ public class TaskService implements TaskInterface {
     public Boolean updateTask() {
         return null;
     }
-    public Boolean saveStatus(Task task,TaskStatusEnum status){
-        TaskStatus statusEntity = taskStatusService.findByEnum(status);
-        task.setStatus(statusEntity);
-        taskRepository.save(task);
-        return true;
-    }
+
     private Task findTaskById(int taskId) {
         return taskRepository.findById(taskId)
                 .orElseThrow(() -> new RuntimeException("Task tapılmadı"));
     }
     @Override
     public Boolean changeStatus(int taskId, TaskStatusEnum newStatus) {
-        Task task = findTaskById(taskId); // Taskı tapmaq üçün utility metoddan istifadə edirik
-        int projectId = task.getProject().getId(); // Taskın aid olduğu layihənin ID-sini tapırıq
-
-        // Statusa görə switch istifadə edirik
-        switch (newStatus) {
-            // Layihə rəhbərinin dəyişə biləcəyi statuslar
-            case CANCELLED:
-            case COMPLETED:
-            case NOT_COMPLETED:
-                if (checkProjectTeamLead(projectId)) {
-                    saveStatus(task, newStatus); // Statusu yeniləyirik
-                } else {
-                    throw new RuntimeException("Yalnız komanda rəhbəri taskın statusunu dəyişə bilər.");
-                }
-                break;
-
-            // Taskın icra olunmasını tələb edən işçinin dəyişə biləcəyi statuslar
-            case IN_PROGRESS:
-            case ON_HOLD:
-                if (getCurrentUserId() == getTaskEmployeeId(taskId)) {
-                    saveStatus(task, newStatus); // Statusu yeniləyirik
-                } else {
-                    throw new RuntimeException("Taskın icraçısı yalnız müəyyən statusları dəyişə bilər.");
-                }
-                break;
-
-            // Əgər tanınmayan status verilərsə
-            default:
-                throw new RuntimeException("Mövcud olmayan status!");
+        Task task = findTaskById(taskId);
+        int projectId = task.getProject().getId();
+        TaskStatusChangeCommand command;
+        // TeamLead
+        if (checkProjectTeamLead(projectId)) {
+            command = new TeamLeadStatusChangeCommand(newStatus, taskStatusService);
         }
-
+        // Employee
+        else if (getCurrentUserId() == getTaskEmployeeId(taskId)) {
+            command = new EmployeeStatusChangeCommand(newStatus, taskStatusService);
+        } else {
+            throw new RuntimeException("Səlahiyyətiniz yoxdur.");
+        }
+        // Status dəyişmə əmrini icra edirik
+        command.execute(task);
+        taskRepository.save(task);
         return true;
     }
 

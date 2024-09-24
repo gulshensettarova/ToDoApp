@@ -5,7 +5,7 @@ import com.company.toDoApp.model.dao.repository.TaskStatusRepository;
 import com.company.toDoApp.model.enums.task.TaskStatusEnum;
 import com.company.toDoApp.service.v1.Inter.TaskStatusInterface;
 
-public class TaskStatusImpl implements TaskStatusInterface {
+public class TaskStatusService implements TaskStatusInterface {
     private TaskStatusRepository taskStatusRepository;
 
     @Override
