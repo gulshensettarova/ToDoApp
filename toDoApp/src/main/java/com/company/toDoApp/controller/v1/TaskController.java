@@ -1,13 +1,8 @@
 package com.company.toDoApp.controller.v1;
 
 import com.company.toDoApp.model.dto.Request.Create.TaskCreateRequest;
-import com.company.toDoApp.model.dto.Request.Filter.TaskFilterRequest;
-import com.company.toDoApp.model.dto.Request.Update.TaskUpdateRequest;
-import com.company.toDoApp.model.dto.Response.TaskResponse;
-import com.company.toDoApp.service.v1.Impl.TaskService;
+import com.company.toDoApp.service.v1.impl.task.TaskService;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/tasks")

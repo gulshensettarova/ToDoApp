@@ -1,7 +1,7 @@
 package com.company.toDoApp.controller.v1;
 
 import com.company.toDoApp.model.dto.Request.Create.UserCreateRequest;
-import com.company.toDoApp.service.UserRegistrationService;
+import com.company.toDoApp.service.v1.impl.user.UserRegistrationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

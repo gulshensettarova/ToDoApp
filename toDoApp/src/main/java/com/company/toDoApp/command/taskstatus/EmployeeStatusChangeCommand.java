@@ -3,7 +3,7 @@ package com.company.toDoApp.command.taskstatus;
 import com.company.toDoApp.model.dao.entity.Task;
 import com.company.toDoApp.model.dao.entity.TaskStatus;
 import com.company.toDoApp.model.enums.task.TaskStatusEnum;
-import com.company.toDoApp.service.v1.Impl.TaskStatusService;
+import com.company.toDoApp.service.v1.impl.task.TaskStatusService;
 
 public class EmployeeStatusChangeCommand  extends PersonStatusChange{
     public EmployeeStatusChangeCommand(TaskStatusEnum newStatus, TaskStatusService taskStatusService) {

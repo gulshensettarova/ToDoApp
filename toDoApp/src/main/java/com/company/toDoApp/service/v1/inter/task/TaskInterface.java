@@ -1,4 +1,4 @@
-package com.company.toDoApp.service.v1.Inter;
+package com.company.toDoApp.service.v1.inter.task;
 
 
 import com.company.toDoApp.model.dto.Request.Create.TaskCreateRequest;

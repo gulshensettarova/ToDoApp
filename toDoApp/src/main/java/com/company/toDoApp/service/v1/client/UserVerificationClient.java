@@ -1,4 +1,4 @@
-package com.company.toDoApp.service.client;
+package com.company.toDoApp.service.v1.client;
 
 import com.company.toDoApp.wrapper.UserEmployeeWrapper;
 import org.springframework.cloud.openfeign.FeignClient;

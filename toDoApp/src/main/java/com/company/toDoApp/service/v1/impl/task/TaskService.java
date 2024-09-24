@@ -1,10 +1,9 @@
-package com.company.toDoApp.service.v1.Impl;
+package com.company.toDoApp.service.v1.impl.task;
 
 import com.company.toDoApp.command.taskstatus.EmployeeStatusChangeCommand;
 import com.company.toDoApp.command.taskstatus.TaskStatusChangeCommand;
 import com.company.toDoApp.command.taskstatus.TeamLeadStatusChangeCommand;
 import com.company.toDoApp.model.dao.entity.Project;
-import com.company.toDoApp.model.dao.entity.TaskStatus;
 import com.company.toDoApp.model.dao.repository.ProjectRepository;
 import com.company.toDoApp.model.dto.Request.Create.TaskCreateRequest;
 import com.company.toDoApp.model.enums.task.TaskStatusEnum;
@@ -12,7 +11,7 @@ import com.company.toDoApp.model.dao.entity.Task;
 import com.company.toDoApp.model.dao.repository.TaskRepository;
 import com.company.toDoApp.mapper.TaskMapper;
 import com.company.toDoApp.security.UserPrincipal;
-import com.company.toDoApp.service.v1.Inter.TaskInterface;
+import com.company.toDoApp.service.v1.inter.task.TaskInterface;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 

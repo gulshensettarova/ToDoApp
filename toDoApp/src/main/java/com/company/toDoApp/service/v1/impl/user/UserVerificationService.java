@@ -1,19 +1,20 @@
-package com.company.toDoApp.service;
+package com.company.toDoApp.service.v1.impl.user;
 
 import com.company.toDoApp.model.dao.entity.Employee;
-import com.company.toDoApp.service.client.UserVerificationClient;
+import com.company.toDoApp.service.v1.client.UserVerificationClient;
+import com.company.toDoApp.service.v1.inter.user.UserVerificationInterface;
 import com.company.toDoApp.wrapper.UserEmployeeWrapper;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserVerificationService {
+public class UserVerificationService implements UserVerificationInterface {
 
     private final UserVerificationClient userVerificationClient;
 
     public UserVerificationService(UserVerificationClient userVerificationClient) {
         this.userVerificationClient = userVerificationClient;
     }
-
+    @Override
     public boolean verifyEmailExists(String email) {
         UserEmployeeWrapper[] users = userVerificationClient.getUsers();
 
@@ -27,6 +28,7 @@ public class UserVerificationService {
         return false;
     }
 
+    @Override
     public Employee getEmployeeByEmail(String email) {
         UserEmployeeWrapper[] users = userVerificationClient.getUsers();
         if(verifyEmailExists(email)){

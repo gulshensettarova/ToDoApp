@@ -1,7 +1,7 @@
 package com.company.toDoApp.controller.v1;
 
 import com.company.toDoApp.model.dto.Request.Filter.SignInRequest;
-import com.company.toDoApp.service.AuthenticationService;
+import com.company.toDoApp.service.v1.impl.auth.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
