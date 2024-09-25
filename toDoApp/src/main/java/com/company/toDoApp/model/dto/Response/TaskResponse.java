@@ -2,6 +2,7 @@ package com.company.toDoApp.model.dto.Response;
 
 import com.company.toDoApp.model.dao.entity.Employee;
 import com.company.toDoApp.model.dao.entity.Project;
+import com.company.toDoApp.model.dao.entity.TaskStatus;
 import lombok.Builder;
 import lombok.Data;
 

@@ -1,7 +1,9 @@
 package com.company.toDoApp.command.taskstatus;
 
+import com.company.toDoApp.exceptions.BaseException;
 import com.company.toDoApp.model.dao.entity.Task;
 import com.company.toDoApp.model.dao.entity.TaskStatus;
+import com.company.toDoApp.model.enums.error.ResponseCodes;
 import com.company.toDoApp.model.enums.task.TaskStatusEnum;
 import com.company.toDoApp.service.v1.impl.task.TaskStatusService;
 
@@ -18,7 +20,7 @@ public class EmployeeStatusChangeCommand  extends PersonStatusChange{
             this.previousStatus = statusEntity;
             task.setStatus(statusEntity);
         } else {
-            throw new RuntimeException("İşçi yalnız icra ilə bağlı statusları dəyişə bilər.");
+            throw BaseException.of(ResponseCodes.INSUFFICIENT_PERMISSIONS);
         }
     }
 

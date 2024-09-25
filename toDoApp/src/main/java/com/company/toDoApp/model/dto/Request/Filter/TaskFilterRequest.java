@@ -6,10 +6,10 @@ import java.util.Date;
 @Data
 public class TaskFilterRequest {
     private String title;
-    private int priority;
+    private Integer priority;
     private Date deadline;
-    private int projectId;
-    private int employeeId;
-    private int statusId;
-    private int categoryId;
+    private Integer projectId;
+    private Integer employeeId;
+    private Integer statusId;
+    private Integer categoryId;
 }
