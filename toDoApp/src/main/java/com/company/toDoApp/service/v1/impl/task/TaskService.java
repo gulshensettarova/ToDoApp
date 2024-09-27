@@ -111,6 +111,7 @@ public class TaskService implements TaskInterface {
         }
         // Status dəyişmə əmrini icra edirik
         command.execute(task);
+
         taskRepository.save(task);
         return true;
     }

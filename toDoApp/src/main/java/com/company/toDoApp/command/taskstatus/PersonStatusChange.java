@@ -9,6 +9,7 @@ public abstract class PersonStatusChange implements TaskStatusChangeCommand{
     protected final TaskStatusEnum newStatus;
     protected final TaskStatusService taskStatusService;
     protected TaskStatus previousStatus;
+
     public PersonStatusChange(TaskStatusEnum newStatus, TaskStatusService taskStatusService) {
         this.newStatus = newStatus;
         this.taskStatusService = taskStatusService;
